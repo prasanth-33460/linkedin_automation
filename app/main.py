@@ -89,7 +89,7 @@ class LinkedInAutomation:
                         # print("Chat minimized successfully.")
                         # time.sleep(2)
 
-                        close_button = self.wait.until(EC.element_to_be_clickable((By.XPATH, "//button[@id='ember168']")))
+                        close_button = self.wait.until(EC.presence_of_element_located((By.XPATH, "//div[contains(@class, 'msg-overlay-bubble-header__controls')]//button[contains(., 'Close')]")))
                         self.driver.execute_script("arguments[0].click();", close_button)  
                         print("Chat closed successfully.")
                         time.sleep(2)
