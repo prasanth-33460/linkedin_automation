@@ -66,7 +66,7 @@ class LinkedInAutomation:
                 all_message_buttons = self.driver.find_elements(By.XPATH, "//button[contains(@aria-label, 'Message') and contains(@class, 'artdeco-button')]")
                 message_button = [btn for btn in all_message_buttons if btn.text == "Message"]
 
-                for i in range(7, len(message_button)):
+                for i in range(8, len(message_button)):
                     try:
                         self.driver.execute_script("arguments[0].click();", message_button[i])
                         time.sleep(2)
@@ -111,7 +111,30 @@ class LinkedInAutomation:
                     break
         except Exception as e:
             print(f"Error accessing message URL or sending messages: {e}")
+    
+    def send_connection(self, second_url):
+        try:
+            self.driver.get(second_url)
+            time.sleep(2)
             
+            message_btn = self.driver.find_elements(By.TAG_NAME, "button")
+            connect_btn = [btn for btn in message_btn if btn.text == "Connect"]
+            
+            for btn in connect_btn:
+                self.driver.execute_script("arguments[0].click();", btn)
+                time.sleep(2)
+                
+                self.driver.find_element(By.XPATH, "//button[@aria-label='Send invitation']")
+                self.driver.execute_script("arguments[0].click();", btn)
+                time.sleep(2)
+            
+        except Exception as e:
+            pass
+        
+        
+        
+        
+        
     def close(self):
         try:
             self.driver.quit()
@@ -124,6 +147,7 @@ if __name__ == "__main__":
     password = "prasanthXbezos@1234509876"
     message_url = "https://www.linkedin.com/search/results/people/?network=%5B%22F%22%5D&origin=FACETED_SEARCH&sid=*L2"
     message = "Sorry, didn't mean to bother you! I am just building a LinkedIn automation tool!"
+    second_url = "https://www.linkedin.com/search/results/people/?network=%5B%22S%22%5D&origin=FACETED_SEARCH&sid=0cY"
 
     bot = LinkedInAutomation()
     bot.login(email, password)
