@@ -1,75 +1,74 @@
 from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC 
 from selenium.webdriver.support.ui import WebDriverWait
 import time 
-
+import random
 
 class LinkedInAutomation:
-    
     def __init__(self):
         self.driver = webdriver.Chrome()
         self.wait = WebDriverWait(self.driver, 20)
+        
+    def random_sleep(self):
+        delay = random.uniform(1,5)
+        time.sleep(delay)
+        print(f"Paused for {delay:.2f} seconds.")  
     
     def login(self,email, password):
         try:
             login_url = "https://www.linkedin.com/"
             self.driver.get(login_url)
-            time.sleep(2)
+            self.driver.maximize_window()
+            self.random_sleep()
 
             button = self.wait.until(EC.element_to_be_clickable((By.XPATH, "//main[@id='main-content']//a[contains(@class, 'sign-in-form__sign-in-cta')]")))
             button.click()
             print("Button clicked successfully!")
-            time.sleep(2)
+            self.random_sleep()
 
             email_input = self.wait.until(EC.presence_of_element_located((By.XPATH, "//input[@id='username']")))
             email_input.send_keys(email)
             print("Email entered Successfully!")
-            time.sleep(2)
+            self.random_sleep()
 
             password_input = self.wait.until(EC.presence_of_element_located((By.XPATH, "//input[@id='password']")))
             password_input.send_keys(password)
             print("Password entered Successfully!")
-            time.sleep(2)
+            self.random_sleep()
 
             sign_in_button = self.wait.until(EC.element_to_be_clickable((By.XPATH, "//button[@class='btn__primary--large from__button--floating']")))
             sign_in_button.click()
             print("Sign in Button clicked!")
-            time.sleep(2)
-
+            self.random_sleep()
             try:
                 otp_input = self.wait.until(EC.presence_of_element_located((By.XPATH, "//input[@id='input__phone_verification_pin']")))
                 print("Please enter the OTP in the browser...")
                 self.wait.until(lambda driver: len(otp_input.get_attribute('value')) == 6)
                 print(f"OTP detected: {otp_input.get_attribute('value')}")
-                time.sleep(2)
+                self.random_sleep()
 
                 submit_button = self.wait.until(EC.element_to_be_clickable((By.XPATH, "//button[@id='two-step-submit-button']")))
                 submit_button.click()
                 print("Submit button clicked successfully!")
-                time.sleep(2)
-
+                self.random_sleep()
             except Exception as otp_exception:
                 print("OTP step skipped or not required.")
-        
         except Exception as e:
             print(f"Error during login: {e}")
-    
     
     def send_messages(self, message_url, message):
         try:
             self.driver.get(message_url)
-            time.sleep(2)
+            self.random_sleep()
             
             while True:
                 all_message_buttons = self.driver.find_elements(By.XPATH, "//button[contains(@aria-label, 'Message') and contains(@class, 'artdeco-button')]")
                 message_button = [btn for btn in all_message_buttons if btn.text == "Message"]
-
-                for i in range(8, len(message_button)):
+                for i in range(0, len(message_button)):
                     try:
                         self.driver.execute_script("arguments[0].click();", message_button[i])
-                        time.sleep(2)
+                        self.random_sleep()
 
                         main_div = self.driver.find_element(By.XPATH, "//div[starts-with(@class, 'msg-form__msg-content-container')]")
                         self.driver.execute_script("arguments[0].click();", main_div)
@@ -77,32 +76,33 @@ class LinkedInAutomation:
                         paragraph = self.driver.find_elements(By.TAG_NAME, "p")
                         paragraph[-5].send_keys(message)
                         print(f"Message entered: {message}")
-                        time.sleep(2)
+                        self.random_sleep()
 
                         send_button = self.wait.until(EC.element_to_be_clickable((By.XPATH, "//button[contains(@class, 'msg-form__send-button')]")))
                         send_button.click()
                         print("Message sent successfully!")
-                        time.sleep(2)
+                        self.random_sleep()
 
                         # minimize_button = self.wait.until(EC.element_to_be_clickable((By.XPATH, "//header[contains(@class, 'msg-overlay-conversation-bubble-header')]/div/button[@id='ember168']")))
                         # minimize_button.click()
                         # print("Chat minimized successfully.")
-                        # time.sleep(2)
+                        # self.random_sleep()
 
                         close_button = self.wait.until(EC.presence_of_element_located((By.XPATH, "//div[contains(@class, 'msg-overlay-bubble-header__controls')]//button[contains(., 'Close')]")))
                         self.driver.execute_script("arguments[0].click();", close_button)  
                         print("Chat closed successfully.")
-                        time.sleep(2)
+                        self.random_sleep()
                         
                     except Exception as message_exception:
                         print(f"Error during message sending for recipient {i}: {message_exception}")
                         
                 try:
-                    next_button = self.driver.find_element(By.XPATH, "//button[@id='ember140']")
+                    next_button = self.driver.find_element(By.XPATH, "//button[@aria-label='Next']")
                     if next_button.is_enabled():
+                        self.driver.execute_script("arguments[0].scrollIntoView();", next_button)
                         next_button.click()
                         print("Navigated to next page.")
-                        time.sleep(3)
+                        self.random_sleep()
                     else:
                         print("No more pages to navigate.")
                         break
@@ -115,25 +115,74 @@ class LinkedInAutomation:
     def send_connection(self, second_url):
         try:
             self.driver.get(second_url)
-            time.sleep(2)
+            print("Navigating to the page...")
+            self.random_sleep()
             
-            message_btn = self.driver.find_elements(By.TAG_NAME, "button")
-            connect_btn = [btn for btn in message_btn if btn.text == "Connect"]
-            
-            for btn in connect_btn:
-                self.driver.execute_script("arguments[0].click();", btn)
-                time.sleep(2)
+            while True:
+                try:
+                    # self.wait.until(EC.presence_of_all_elements_located((By.XPATH, '//button[contains(@aria-label, "Invite")]')))
+                    connect_buttons = self.driver.find_elements(By.XPATH, '//button[contains(@aria-label, "Invite")]')
+                    
+                    # self.wait.until(EC.presence_of_all_elements_located((By.XPATH, '//button[contains(@aria-label, "Follow")]')))
+                    follow_buttons = self.driver.find_elements(By.XPATH, '//button[contains(@aria-label, "Follow")]')
+                    print("Elements are visible on the page.")
+                except Exception as e:
+                    print(f"Error waiting for elements: {e}")
+                    break
+
+                print(f"Found {len(connect_buttons)} Connect buttons and {len(follow_buttons)} Follow buttons.")
                 
-                self.driver.find_element(By.XPATH, "//button[@aria-label='Send invitation']")
-                self.driver.execute_script("arguments[0].click();", btn)
-                time.sleep(2)
-            
+                if connect_buttons or follow_buttons:
+                    for button in connect_buttons:
+                        try:
+                            self.driver.execute_script("arguments[0].scrollIntoView();", button)                
+                            self.driver.execute_script("arguments[0].click();", button)
+                            print("Clicked a Connect button.")
+                            self.random_sleep()
+                            
+                            try:
+                                got_it_button = self.wait.until(EC.element_to_be_clickable((By.XPATH, '//button[contains(@aria-label, "Got it")]')))
+                                self.driver.execute_script("arguments[0].click();", got_it_button)
+                                print("Clicked the Got it button.")
+                            except Exception:
+                                print("No 'Got it' pop-up appeared.")
+                            
+                            try:
+                                send_without_note_button = self.wait.until(EC.element_to_be_clickable((By.XPATH, '//button[contains(@aria-label, "Send without a note")]')))
+                                self.driver.execute_script("arguments[0].click();", send_without_note_button)
+                                print("Clicked 'Send without a note' button.")
+                                self.random_sleep()
+                            except Exception:
+                                print("No 'Send without a note' button found.")
+                                
+                            send_button = self.wait.until(EC.element_to_be_clickable((By.XPATH, '//button[contains(@aria-label, "Send invitation")]')))
+                            self.driver.execute_script("arguments[0].click();", send_button)
+                            print("Clicked the Send button.")
+                            self.random_sleep()
+                        except Exception as inner_e:
+                            print(f"Could not click a button: {inner_e}")   
+                    
+                    for follow_button in follow_buttons:
+                        try:
+                            self.driver.execute_script("arguments[0].scrollIntoView();", follow_button)
+                            self.driver.execute_script("arguments[0].click();", follow_button)
+                            print("Clicked a 'Follow' button.")
+                            self.random_sleep()
+                        except Exception as follow_e:
+                            print(f"Could not click a 'Follow' button: {follow_e}")
+                else:
+                    print("No 'Connect' or 'Follow' buttons found on this page.")
+
+                try:
+                    next_button = self.wait.until(EC.element_to_be_clickable((By.XPATH, '//button[contains(@aria-label, "Next")]')))
+                    self.driver.execute_script("arguments[0].click();", next_button)
+                    print("Clicked the 'Next' button for pagination.")
+                    self.random_sleep()
+                except Exception:
+                    print("No 'Next' button found or reached the last page.")
+                    break
         except Exception as e:
-            pass
-        
-        
-        
-        
+            print(f"An error occurred: {e}")            
         
     def close(self):
         try:
@@ -143,13 +192,14 @@ class LinkedInAutomation:
             print(f"Error during driver close: {e}")
             
 if __name__ == "__main__":
-    email = "prasanth33460@gmail.com"
-    password = "prasanthXbezos@1234509876"
+    email = "kumaranrandy77@gmail.com"
+    password = "prasanth123"
     message_url = "https://www.linkedin.com/search/results/people/?network=%5B%22F%22%5D&origin=FACETED_SEARCH&sid=*L2"
     message = "Sorry, didn't mean to bother you! I am just building a LinkedIn automation tool!"
     second_url = "https://www.linkedin.com/search/results/people/?network=%5B%22S%22%5D&origin=FACETED_SEARCH&sid=0cY"
 
     bot = LinkedInAutomation()
     bot.login(email, password)
-    bot.send_messages(message_url, message)
+    # bot.send_messages(message_url, message)
+    bot.send_connection(second_url)
     bot.close()
