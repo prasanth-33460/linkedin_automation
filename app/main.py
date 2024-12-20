@@ -198,6 +198,6 @@ if __name__ == "__main__":
 
     bot = LinkedInAutomation()
     bot.login(email, password)
-    # bot.send_messages(message_url, message)
+    bot.send_messages(message_url, message)
     bot.send_connection(second_url)
     bot.close()
