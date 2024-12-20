@@ -120,10 +120,7 @@ class LinkedInAutomation:
             
             while True:
                 try:
-                    # self.wait.until(EC.presence_of_all_elements_located((By.XPATH, '//button[contains(@aria-label, "Invite")]')))
                     connect_buttons = self.driver.find_elements(By.XPATH, '//button[contains(@aria-label, "Invite")]')
-                    
-                    # self.wait.until(EC.presence_of_all_elements_located((By.XPATH, '//button[contains(@aria-label, "Follow")]')))
                     follow_buttons = self.driver.find_elements(By.XPATH, '//button[contains(@aria-label, "Follow")]')
                     print("Elements are visible on the page.")
                 except Exception as e:
@@ -132,46 +129,47 @@ class LinkedInAutomation:
 
                 print(f"Found {len(connect_buttons)} Connect buttons and {len(follow_buttons)} Follow buttons.")
                 
-                if connect_buttons or follow_buttons:
-                    for button in connect_buttons:
+                for button in connect_buttons:
+                    try:
+                        self.driver.execute_script("arguments[0].scrollIntoView();", button)                
+                        self.driver.execute_script("arguments[0].click();", button)
+                        print("Clicked a Connect button.")
+                        self.random_sleep()
+                        
                         try:
-                            self.driver.execute_script("arguments[0].scrollIntoView();", button)                
-                            self.driver.execute_script("arguments[0].click();", button)
-                            print("Clicked a Connect button.")
+                            send_without_note_button = self.wait.until(EC.element_to_be_clickable((By.XPATH, '//button[contains(@aria-label, "Send without a note")]')))
+                            self.driver.execute_script("arguments[0].click();", send_without_note_button)
+                            print("Clicked 'Send without a note' button.")
                             self.random_sleep()
+                        except Exception:
+                            print("No 'Send without a note' button found.")
                             
-                            try:
-                                got_it_button = self.wait.until(EC.element_to_be_clickable((By.XPATH, '//button[contains(@aria-label, "Got it")]')))
-                                self.driver.execute_script("arguments[0].click();", got_it_button)
-                                print("Clicked the Got it button.")
-                            except Exception:
-                                print("No 'Got it' pop-up appeared.")
-                            
-                            try:
-                                send_without_note_button = self.wait.until(EC.element_to_be_clickable((By.XPATH, '//button[contains(@aria-label, "Send without a note")]')))
-                                self.driver.execute_script("arguments[0].click();", send_without_note_button)
-                                print("Clicked 'Send without a note' button.")
-                                self.random_sleep()
-                            except Exception:
-                                print("No 'Send without a note' button found.")
-                                
+                        try:
                             send_button = self.wait.until(EC.element_to_be_clickable((By.XPATH, '//button[contains(@aria-label, "Send invitation")]')))
                             self.driver.execute_script("arguments[0].click();", send_button)
                             print("Clicked the Send button.")
                             self.random_sleep()
-                        except Exception as inner_e:
-                            print(f"Could not click a button: {inner_e}")   
-                    
-                    for follow_button in follow_buttons:
+                        except Exception:
+                            print("No 'send' button found.")
+                            
                         try:
-                            self.driver.execute_script("arguments[0].scrollIntoView();", follow_button)
-                            self.driver.execute_script("arguments[0].click();", follow_button)
-                            print("Clicked a 'Follow' button.")
+                            got_it_button = self.wait.until(EC.element_to_be_clickable((By.XPATH, '//button[contains(@aria-label, "Got it")]')))
+                            self.driver.execute_script("arguments[0].click();", got_it_button)
+                            print("Clicked the Got it button.")
                             self.random_sleep()
-                        except Exception as follow_e:
-                            print(f"Could not click a 'Follow' button: {follow_e}")
-                else:
-                    print("No 'Connect' or 'Follow' buttons found on this page.")
+                        except Exception:
+                            print("No 'Got it' pop-up appeared.")
+                    except Exception as inner_e:
+                        print(f"Could not click a button: {inner_e}")   
+                
+                for follow_button in follow_buttons:
+                    try:
+                        self.driver.execute_script("arguments[0].scrollIntoView();", follow_button)
+                        self.driver.execute_script("arguments[0].click();", follow_button)
+                        print("Clicked a 'Follow' button.")
+                        self.random_sleep()
+                    except Exception as follow_e:
+                        print(f"Could not click a 'Follow' button: {follow_e}")
 
                 try:
                     next_button = self.wait.until(EC.element_to_be_clickable((By.XPATH, '//button[contains(@aria-label, "Next")]')))
