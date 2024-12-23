@@ -8,6 +8,9 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.12"
 selenium = "^4.27.1"
+fastapi = "^0.115.6"
+uvicorn = "^0.34.0"
+basemodel = "^20190604.1625"
 
 
 [build-system]

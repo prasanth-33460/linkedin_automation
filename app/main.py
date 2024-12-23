@@ -4,6 +4,9 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 import time 
 import random
+from fastapi import FastAPI
+
+app = FastAPI()
 
 class LinkedInAutomation:
     def __init__(self):
@@ -188,10 +191,11 @@ class LinkedInAutomation:
             print("Driver closed successfully.")
         except Exception as e:
             print(f"Error during driver close: {e}")
-            
-if __name__ == "__main__":
-    email = "kumaranrandy77@gmail.com"
-    password = "prasanth123"
+
+@app.get('/')            
+def main():
+    email = "prasanth33460@gmail.com"
+    password = "prasanthXbezos@1234509876"
     message_url = "https://www.linkedin.com/search/results/people/?network=%5B%22F%22%5D&origin=FACETED_SEARCH&sid=*L2"
     message = "Sorry, didn't mean to bother you! I am just building a LinkedIn automation tool!"
     second_url = "https://www.linkedin.com/search/results/people/?network=%5B%22S%22%5D&origin=FACETED_SEARCH&sid=0cY"
