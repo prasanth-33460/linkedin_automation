@@ -195,7 +195,7 @@ class LinkedInAutomation:
 @app.get('/')            
 def main():
     email = "prasanth33460@gmail.com"
-    password = "prasanthXbezos@1234509876"
+    password = ""
     message_url = "https://www.linkedin.com/search/results/people/?network=%5B%22F%22%5D&origin=FACETED_SEARCH&sid=*L2"
     message = "Sorry, didn't mean to bother you! I am just building a LinkedIn automation tool!"
     second_url = "https://www.linkedin.com/search/results/people/?network=%5B%22S%22%5D&origin=FACETED_SEARCH&sid=0cY"
